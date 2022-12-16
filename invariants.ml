@@ -37,12 +37,10 @@ let rec str_of_term t =
   | Mult (a, b) ->  "(* " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
   
 
-
 let str_of_test t = 
   match t with
   | Equals (a, b) -> "(= " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
   | LessThan (a, b) -> "(< " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
-  
 
 let string_repeat s n =
   Array.fold_left (^) "" (Array.make n s)
@@ -53,13 +51,19 @@ let string_repeat s n =
    l'invariant.  Par exemple, str_condition [Var 1; Const 10] retourne 
    "(Inv x1 10)".
 *)
-let str_condition l = "TODO" (* À compléter *)
+let str_condition l =
+  let term_list = List.map (str_of_term) l in
+  let rec str_condition_aux l res =
+    match l with
+    | [] -> res ^ ")"
+    | term :: sublist -> str_condition_aux sublist (res ^ " " ^ term)
+  in str_condition_aux term_list "(Inv"
 
 (* Question 3. Écrire une fonction 
    `str_assert_for_all : int -> string -> string` qui prend en
    argument un entier n et une chaîne de caractères s, et retourne
    l'expression SMTLIB qui correspond à la formule "forall x1 ... xk
-                 (s)".
+              (s)".
 
   Par exemple, str_assert_forall 2 "< x1 x2" retourne : "(assert
                                                              (forall ((x1 Int) (x2 Int)) (< x1 x2)))".  *)
