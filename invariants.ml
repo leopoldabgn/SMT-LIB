@@ -69,8 +69,17 @@ let str_condition l =
                                                              (forall ((x1 Int) (x2 Int)) (< x1 x2)))".  *)
 
 let str_assert s = "(assert " ^ s ^ ")"
+let str_int i = "(" ^ (string_of_int i) ^ " Int)"
+                  
+let str_assert_forall n s = 
+  let rec str_forall_aux res index max =
+    match index with
+    | i when i = max -> res
+    | i -> let res = if i > 0 then res ^ " " else res in
+        str_forall_aux (res ^ (str_int index)) (i+1) max
+  in let s = " (" ^ s ^ ")" in
+  str_assert ((str_forall_aux "\n(forall (" 0 n) ^ s ^ ")")
 
-let str_assert_forall n s = "TODO" (* À compléter *)
 
 (* Question 4. Nous donnons ci-dessous une définition possible de la
    fonction smt_lib_of_wa. Complétez-la en écrivant les définitions de
