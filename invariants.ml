@@ -2,14 +2,14 @@ open Printf
 
 (* Définitions de terme, test et programme *)
 type term = 
- | Const of int
- | Var of int
- | Add of term * term
- | Mult of term * term
+  | Const of int
+  | Var of int
+  | Add of term * term
+  | Mult of term * term
 
 type test = 
- | Equals of term * term
- | LessThan of term * term
+  | Equals of term * term
+  | LessThan of term * term
 
 let tt = Equals (Const 0, Const 0)
 let ff = LessThan (Const 0, Const 0)
@@ -29,9 +29,20 @@ let x n = "x" ^ string_of_int n
   Par exemple, str_of_term (Var 3) retourne "x3", str_of_term (Add
    (Var 1, Const 3)) retourne "(+ x1 3)" et str_of_test (Equals (Var
    2, Const 2)) retourne "(= x2 2)".  *)
-let rec str_of_term t = "TODO" (* À compléter *)
+let rec str_of_term t = 
+  match t with
+  | Const c -> string_of_int c
+  | Var v -> x v
+  | Add  (a, b) -> "(+ " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
+  | Mult (a, b) ->  "(* " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
+  
 
-let str_of_test t = "TODO" (* À compléter *)
+
+let str_of_test t = 
+  match t with
+  | Equals (a, b) -> "(= " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
+  | LessThan (a, b) -> "(< " ^ (str_of_term a) ^ " " ^ (str_of_term b) ^ ")"
+  
 
 let string_repeat s n =
   Array.fold_left (^) "" (Array.make n s)
@@ -41,17 +52,17 @@ let string_repeat s n =
    de caractères qui exprime que le tuple (t1, ..., tk) est dans 
    l'invariant.  Par exemple, str_condition [Var 1; Const 10] retourne 
    "(Inv x1 10)".
-   *)
+*)
 let str_condition l = "TODO" (* À compléter *)
 
 (* Question 3. Écrire une fonction 
    `str_assert_for_all : int -> string -> string` qui prend en
    argument un entier n et une chaîne de caractères s, et retourne
    l'expression SMTLIB qui correspond à la formule "forall x1 ... xk
-   (s)".
+                 (s)".
 
   Par exemple, str_assert_forall 2 "< x1 x2" retourne : "(assert
-   (forall ((x1 Int) (x2 Int)) (< x1 x2)))".  *)
+                                                             (forall ((x1 Int) (x2 Int)) (< x1 x2)))".  *)
 
 let str_assert s = "(assert " ^ s ^ ")"
 
@@ -99,3 +110,4 @@ let () = Printf.printf "%s" (smtlib_of_wa p1)
    de la forme attendue. *)
 
 let p2 = None (* À compléter *)
+
