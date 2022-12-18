@@ -8,9 +8,9 @@ Date limite: 19 décembre 2022
 
 Identité
 --------
-Nombre de binôme: **à remplir**
-Nom, prénom 1: **à remplir**
-Nom, prénom 2: **à remplir**
+Nombre de binôme: 44
+Nom, prénom 1: Abignoli, Léopold
+Nom, prénom 2: Gilardoni, Daniel
 
 
 Questions sur votre code
@@ -18,11 +18,14 @@ Questions sur votre code
 
 ** Exercice 2 **
 
-0. Avez-vous testé que `make invariants` s'exécute sans erreurs ou
+1. Avez-vous testé que `make invariants` s'exécute sans erreurs ou
    warnings, puis que `./invariants` produit une sortie au format
    SMT-LIB, et enfin que cette sortie est acceptée par Z3 ?
-
-**à remplir** 
+   
+Oui :
+- `make invariants` s'esxecute sans erreus et warnings.
+- `./invariants` produit bien une sorite au format SMT-LIB
+- La sortie est bien acceptée par Z3 sans message d'erreur.
 
 ---
 
@@ -32,11 +35,14 @@ Questions sur votre code
    la terminaison ?
    
 
-**à remplir**
+Il est naturel d'utiliser une fonction avec un `match with`, pour vérifier chaque cas. On
+fait alors des appels récursifs dans le cas d'un `Add` ou `Mult`.
+Ce qu'on ne fait pas pour les tyoes `Var` ou `Const` qui nous assure de la terminaison de la fonction.
+Ce sont les cas de base.
 
 ---
 
-2. Pour l'implémentation de `str_condition`, quelles sont les
+1. Pour l'implémentation de `str_condition`, quelles sont les
    fonctions auxiliaires que vous avez utilisées et/ou écrites ? (Par
    une fonction auxiliaire, on entend ici soit une fonction d'une
    bibliothèque, par exemple des fonctions comme `List.length` ou
@@ -44,22 +50,29 @@ Questions sur votre code
    avez écrite vous-mêmes.) Expliquez en quelques phrases en français
    comment ces fonctions auxiliaires sont utilisées dans votre
    implémentation de la fonction `str_condition`.
-   
-**à remplir**
+
+D'abord, nous avons appliqué un `List.map` à la liste pour remplacer chaque `term` par leur `string`
+Ensuite, nous avons utilisé une fonction `str_condition_aux` pour créer une string avec tous les
+éléments necessaire. Cette fonction permet de retirer chaque term de la liste pour les concaténer
+à une string au fur et à mesure.
 
 ---
 
-3. Pour l'implémentation de `str_assert_forall`, quelles sont les
+1. Pour l'implémentation de `str_assert_forall`, quelles sont les
    fonctions auxiliaires que vous avez utilisées et/ou écrites ?
    Expliquez en quelques phrases en français comment ces fonctions
    auxiliaires sont utilisées dans votre implémentation de la fonction
    `str_assert_forall`.
    
-**à remplir**   
+Ici, nous avons utilisé une fonction `str_forall_aux`. Cette fonction permet de concaténer
+plusieurs fois la chaine '(i Int)' (par ex: (1 Int) (2 Int) (3 Int)...). De plus, on a une
+fonction `str_int` pour créer une string (i Int) à partir d'un entier i.
+Pour créer le résulat final on appelle donc `str_forall_aux` avec une string de départ "(forall".
+Enfin, `str_assert` est utilisé sur le résultat de `str_forall_aux`.
    
 ---
 
-4. Le langage de programmation WA suppose que les mises à jour des
+1. Le langage de programmation WA suppose que les mises à jour des
    variables `x1`, ..., `xk` sont simultanées : par exemple, si `x1`
    vaut `1` et x2 vaut `1`, exécuter
 

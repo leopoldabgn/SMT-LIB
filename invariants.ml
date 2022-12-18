@@ -52,11 +52,15 @@ let string_repeat s n =
    "(Inv x1 10)".
 *)
 let str_condition l =
+  (* On fait un map pour transformer tous les `term` de la liste en string *)
   let term_list = List.map (str_of_term) l in
+  (* - l est la liste des éléments qu'on va retirer au fur et à mesure
+     - res est la string qu'on va modifier et qui representera le resultat final*)
   let rec str_condition_aux l res =
     match l with
     | [] -> res ^ ")"
     | term :: sublist -> str_condition_aux sublist (res ^ " " ^ term)
+  (* La string res contient un "(Inv" au début puis on rajoutera un ")" à la fin *)
   in str_condition_aux term_list "(Inv"
 
 (* Question 3. Écrire une fonction 
@@ -69,17 +73,21 @@ let str_condition l =
                                                              (forall ((x1 Int) (x2 Int)) (< x1 x2)))".  *)
 
 let str_assert s = "(assert " ^ s ^ ")"
+
+(* Permet de convertir un int en string `(i Int)` *)
 let str_int i = "(" ^ (string_of_int i) ^ " Int)"
                   
 let str_assert_forall n s = 
+  (* Ici, nous avons:
+     - res, la string avec le résultat qu'on renverra à la fin.
+     - index qu'on va incrementer jusqu'à arriver à max *)
   let rec str_forall_aux res index max =
     match index with
     | i when i = max -> res
-    | i -> let res = if i > 0 then res ^ " " else res in
-        str_forall_aux (res ^ (str_int index)) (i+1) max
+    | i -> let res = if i > 0 then res ^ " " else res in (* On ajoute un espace avant que après le 1er appel. (Pour pas avoir un espace en trop au début) *)
+        str_forall_aux (res ^ (str_int index)) (i+1) max (* On concatène (index Int) à notre résultat*)
   in let s = " (" ^ s ^ ")" in
-  str_assert ((str_forall_aux "\n(forall (" 0 n) ^ s ^ ")")
-
+  str_assert ((str_forall_aux "\n(forall (" 0 n) ^ s ^ ")") (* Pour finir, on ajoute (assert ... et (forall... *)
 
 (* Question 4. Nous donnons ci-dessous une définition possible de la
    fonction smt_lib_of_wa. Complétez-la en écrivant les définitions de
