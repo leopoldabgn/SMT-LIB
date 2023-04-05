@@ -37,7 +37,7 @@ Oui :
 
 Il est naturel d'utiliser une fonction avec un `match with`, pour vérifier chaque cas. On
 fait alors des appels récursifs dans le cas d'un `Add` ou `Mult`.
-Ce qu'on ne fait pas pour les tyoes `Var` ou `Const` qui nous assure de la terminaison de la fonction.
+Ce qu'on ne fait pas pour les types `Var` ou `Const` qui nous assure de la terminaison de la fonction.
 Ce sont les cas de base.
 
 ---

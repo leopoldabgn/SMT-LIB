@@ -61,7 +61,7 @@ let str_condition l =
     | [] -> res ^ ")"
     | term :: sublist -> str_condition_aux sublist (res ^ " " ^ term)
   (* La string res contient un "(Inv" au début puis on rajoutera un ")" à la fin *)
-  in str_condition_aux term_list "(Inv"
+  in str_condition_aux term_list "(Invar"
 
 (* Question 3. Écrire une fonction 
    `str_assert_for_all : int -> string -> string` qui prend en
@@ -85,13 +85,28 @@ let str_assert_forall n s =
     match index with
     | i when i = max -> res
     | i -> let res = if i > 0 then res ^ " " else res in (* On ajoute un espace avant que après le 1er appel. (Pour pas avoir un espace en trop au début) *)
-        str_forall_aux (res ^ (str_int index)) (i+1) max (* On concatène (index Int) à notre résultat*)
+        str_forall_aux (res ^ ("(" ^ (x (index+1)) ^ " Int)")) (i+1) max (* On concatène (index Int) à notre résultat*)
   in let s = " (" ^ s ^ ")" in
-  str_assert ((str_forall_aux "\n(forall (" 0 n) ^ s ^ ")") (* Pour finir, on ajoute (assert ... et (forall... *)
+  str_assert ((str_forall_aux "\n(forall (" 0 n) ^ ")" ^ s ^ ")") (* Pour finir, on ajoute (assert ... et (forall... *)
 
 (* Question 4. Nous donnons ci-dessous une définition possible de la
    fonction smt_lib_of_wa. Complétez-la en écrivant les définitions de
    loop_condition et assertion_condition. *)
+
+(* Une fonction permettant de créer une liste de n variables  *)
+let tab_of_vars n = 
+  let rec tab_of_vars_aux ni list =
+    match ni with
+    | 0 -> list
+    | _ -> tab_of_vars_aux (ni-1) (Var ni :: list)
+  in tab_of_vars_aux n []
+
+(* Fonction permettant d'obtenir la negation de la fonction str_of_test, utile pour obtenir 
+   la négation d'une condition de boucle *)
+let negation_of_str_of_test t = 
+  match t with 
+  |Equals(x,y)->"(not ("^(str_of_term x)^" "^(str_of_term y)^"))"
+  |LessThan(x,y)-> "(>= "^(str_of_term x)^" "^(str_of_term y)^")"
 
 let smtlib_of_wa p = 
   let declare_invariant n =
@@ -100,13 +115,15 @@ let smtlib_of_wa p =
     ^"(declare-fun Invar (" ^ string_repeat "Int " n ^  ") Bool)" in
   let loop_condition p =
     "; la relation Invar est un invariant de boucle\n"
-    ^"TODO" (* À compléter *) in
+    ^str_assert_forall p.nvars ("\n => (and "^str_condition (tab_of_vars p.nvars)^" "
+    ^str_of_test p.loopcond ^ ") " ^ str_condition p.mods) in
   let initial_condition p =
     "; la relation Invar est vraie initialement\n"
     ^str_assert (str_condition p.inits) in
   let assertion_condition p =
     "; l'assertion finale est vérifiée\n"
-    ^"TODO" (* À compléter *) in
+    ^str_assert_forall p.nvars ("\n => (and " ^ str_condition (tab_of_vars p.nvars)^ " "
+    ^ negation_of_str_of_test p.loopcond ^ ") " ^ str_of_test p.assertion) in
   let call_solver =
     "; appel au solveur\n(check-sat-using (then qe smt))\n(get-model)\n(exit)\n" in
   String.concat "\n" [declare_invariant p.nvars;
@@ -130,5 +147,14 @@ let () = Printf.printf "%s" (smtlib_of_wa p1)
    un autre programme test, et vérifiez qu'il donne un fichier SMTLIB
    de la forme attendue. *)
 
-let p2 = None (* À compléter *)
+let p2 = {nvars = 2;
+          inits = [(Const 1) ; (Const 1)];
+          mods = [Add ((Var 1), (Const 3)) ; Mult ((Var 2), (Const 5))];
+          loopcond = LessThan ((Var 2),(Const 10));
+          assertion = Equals ((Var 1),(Const 7))}
+
+let () = Printf.printf "\n\n\n"
+
+
+let () = Printf.printf "%s" (smtlib_of_wa p2)
 
